@@ -54,7 +54,7 @@ struct HomePage: View {
                         Text("ابدأ")
                             .font(.custom("Tajawal-Bold", size: 30))
                             .fontWeight(.bold)
-                            .frame(maxWidth: 300)
+                            .frame(maxWidth: 270)
                             .padding()
                             .background(Color.orange)
                             .cornerRadius(12)

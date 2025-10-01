@@ -1,21 +1,26 @@
+//
+//  hulkstory.swift
+//  MyApp
+//
+//  Created by Reem alghamdi on 09/04/1447 AH.
+//
 
 import SwiftUI
 import AVFoundation
-import Combine
 
-struct StorySentence1: Identifiable {
+struct StorySentence: Identifiable {
     let id = UUID()
     let text: String
     let isAngry: Bool
 }
 
-final class StoryViewModel1: ObservableObject {
-    @Published var sentences: [StorySentence1] = [
-        StorySentence1(text: "بحث غرابٌ عن الماء في صيفٍ حار.", isAngry: true),
-        StorySentence1(text: "فوجد إناءً فيه قليل من الماء في القاع لا يستطيع الوصول إليه.", isAngry: false),
-        StorySentence1(text: "لم يستسلم الغراب.", isAngry: false),
-        StorySentence1(text: "بدأ بجمع الحجارة الصغيرة وأسقطها في الإناء.", isAngry: false),
-        StorySentence1(text: "فارتفع مستوى الماء وهكذا شرب الماء بنجاح.", isAngry: false)
+final class StoryViewModel: ObservableObject {
+    @Published var sentences: [StorySentence] = [
+        StorySentence(text: "بحث غرابٌ عن الماء في صيفٍ حار.", isAngry: true),
+        StorySentence(text: "فوجد إناءً فيه قليل من الماء في القاع لا يستطيع الوصول إليه.", isAngry: false),
+        StorySentence(text: "لم يستسلم الغراب.", isAngry: false),
+        StorySentence(text: "بدأ بجمع الحجارة الصغيرة وأسقطها في الإناء.", isAngry: false),
+        StorySentence(text: "فارتفع مستوى الماء وهكذا شرب الماء بنجاح.", isAngry: false)
     ]
 
     @Published var isPlaying: Bool = false
@@ -56,8 +61,8 @@ final class StoryViewModel1: ObservableObject {
     }
 }
 
-struct HulkStory: View {
-    @StateObject private var vm = StoryViewModel1()
+struct hulkstory: View {
+    @StateObject private var vm = StoryViewModel()
     @State private var showEmojis = false
 
     var body: some View {
@@ -164,8 +169,8 @@ struct HulkStory: View {
 }
 
 // نفس مكوّن الإيموجيات القديم
-struct EmojiEmitter1: View {
-    @State private var particles: [EmojiParticle1] = []
+struct EmojiEmitter: View {
+    @State private var particles: [EmojiParticle] = []
     private let emojis = ["😠", ]
 
     var body: some View {
@@ -230,7 +235,7 @@ struct EmojiEmitter1: View {
 
 //}
 
-struct EmojiParticle1: Identifiable {
+struct EmojiParticle: Identifiable {
     let id = UUID()
     let char: String
     var x: CGFloat
@@ -242,5 +247,5 @@ struct EmojiParticle1: Identifiable {
 }
 
 #Preview {
-    HulkStory()
+    hulkstory()
 }

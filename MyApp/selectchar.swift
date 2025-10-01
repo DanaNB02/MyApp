@@ -9,7 +9,7 @@
 
 import SwiftUI
 
-struct SelectChar: View {
+struct selectchar: View {
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -89,11 +89,13 @@ struct CharacterCard: View {
                     .bold()
                     .foregroundColor(textColor)
                     .multilineTextAlignment(.trailing)
+                   // .shadow(color: .black.opacity(0.3), radius: 4, x: 2, y: 2)
                 
                 Text(description)
                     .font(.custom("Tajawal-Extrabold", size: 21))
                     .foregroundColor(textColor)
                     .multilineTextAlignment(.trailing)
+                    //.shadow(color: .black.opacity(0.3), radius: 3, x: 2, y: 2)
                     .padding(.top, 10)
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
@@ -106,8 +108,24 @@ struct CharacterCard: View {
     }
 }
 
+// مساعد لتحويل Hex إلى Color
+//extension Color {
+//    init(hex: String) {
+//        let scanner = Scanner(string: hex)
+//        _ = scanner.scanString("#")
+//
+//        var rgb: UInt64 = 0
+//        scanner.scanHexInt64(&rgb)
+//
+//        let r = Double((rgb >> 16) & 0xFF) / 255
+//        let g = Double((rgb >> 8) & 0xFF) / 255
+//        let b = Double(rgb & 0xFF) / 255
+//
+//        self.init(red: r, green: g, blue: b)
+//    }
+//}
 
 #Preview {
-    SelectChar()
+    selectchar()
 }
 

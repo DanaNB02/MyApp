@@ -1,7 +1,4 @@
-// ContentView.swift
-//
-// REMOVE the extra TimedWord and ChunkTimestamp structs from here.
-// Keep only ONE definition of ChunkTimestamp (the one with Identifiable).
+
 
 import SwiftUI
 import AVFoundation
@@ -9,11 +6,12 @@ import Combine
 
 
 
-// AudioCoordinator.swift (Pasted into ContentView.swift)
 import Foundation
 import Combine
 import AVFoundation
 
+
+// For audio load, play, pause, and stop. Also ublishes the currentTime to the UI.
 class AudioCoordinator: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published var isPlaying: Bool = false
     @Published var currentTime: Double = 0.0
@@ -56,6 +54,7 @@ class AudioCoordinator: NSObject, ObservableObject, AVAudioPlayerDelegate {
         timer?.cancel()
     }
     
+    // stop when the user click off the page.
     func stop() {
         player?.stop()
         self.isPlaying = false
@@ -63,44 +62,48 @@ class AudioCoordinator: NSObject, ObservableObject, AVAudioPlayerDelegate {
         timer?.cancel()
     }
     
-    // MARK: - AVAudioPlayerDelegate
+    // stop when the audio finishes.
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         stop()
     }
 }
 
-// Using the preferred structure: ChunkTimestamp defined once.
+
+// ----------------------------
+
+// Data model for chunk of text with its corresponding time. Read data from JSON.
 struct ChunkTimestamp: Codable, Identifiable {
-    var id: Double { start } // Use start time as a simple unique ID
+    var id: Double { start }
     let text: String
     let start: Double
     let end: Double
 }
 
+// ----------------------------
+
+// The UI
 struct CongratsPage: View {
-    // AudioCoordinator must be in a separate file OR defined before this struct.
     @StateObject private var audio = AudioCoordinator()
     
+    // Texts from JSON
     @State private var chunks: [ChunkTimestamp] = []
     @State private var activeChunkIndex: Int = -1
     
-    // The full story text (must match the concatenation of chunks.text)
-    // NOTE: This fullStory string is now just for reference. The logic below
-    // constructs the paragraph from the 'chunks' array.
-    private let fullStory: String = "قصة٢ : كان هناك أسدٌ قويٌ استلقى للنوم، فمرّ فأرٌ صغير فوقه فأيقظه. أمسك الأسد بالفأر وتوسل إليه ليتركه قائلًا: ‘قد أساعدك يومًا ما’. ضحك الأسد وأطلق سراحه، وبعد أيام وقع الأسد في شبكة صيادين، فجاء الفأر وقطع الحبال بأسنانه لينقذ الأسد"
+    
+    // Used as a reference later.
+    private let fullStory: String =  "بحث غرابٌ عن الماء في صيفٍ حار، فوجد إناءً فيه قليل من الماء في القاع لا يستطيع الوصول إليه. لم يستسلم الغراب، بل بدأ بجمع الحجارة الصغيرة وأسقطها في الإناء، فارتفع مستوى الماء، وهكذا شرب الماء بنجاح."
 
     var body: some View {
         NavigationStack {
             ZStack {
-                let bgColor =  Color(red: 0.763, green: 0.946, blue: 0.943)
-                let textColor =  Color(red: 0.125, green: 0.181, blue: 0.443)
                 
-                Color(bgColor).ignoresSafeArea()
+                Color.backgroundcolor.ignoresSafeArea()
                 
                 VStack(alignment: .center, spacing: 20) {
                     Spacer()
                     
-                    // MARK: - Playback Button & Status
+                    
+                    // Playback button.
                     VStack (alignment: .center, spacing: 10){
                         HStack(spacing: 20) {
                             Button(audio.isPlaying ? "⏸ إيقاف مؤقت" : "▶️ تشغيل") {
@@ -113,14 +116,14 @@ struct CongratsPage: View {
                             .foregroundColor(.white)
                             .cornerRadius(12)
 
-                            // Show current time
+                            // Show current time - TODO: DELETE
                             Text(String(format: "%.2f ث", audio.currentTime))
                                 .monospaced()
                                 .font(.title3)
                                 .foregroundColor(.gray)
                         }
                         
-                        // MARK: - Highlighted Story Text (using AttributedString)
+                        // Call attributedParagraph to display highlited text.
                         ScrollView {
                             Text(attributedParagraph())
                                 .font(.custom("Tajawal-Bold", size: 32))
@@ -132,14 +135,14 @@ struct CongratsPage: View {
                         .frame(height: 300)
                     }
                     
-                    // Logo and Congrats Text (Rest of your UI)
+                    // Logo and Congrats Text
                     Image("congratsImage")
                         .resizable().scaledToFit().frame(maxWidth: 500)
                     
                     let str = "أنت رائع\nالعالم ينتظر صوتك!"
                     Text(str)
                         .font(.custom("Tajawal-Bold", size: 40))
-                        .foregroundColor(textColor)
+                        .foregroundColor(Color.textcolor)
                         .multilineTextAlignment(.center)
                         .padding(.bottom, 20)
                     
@@ -154,10 +157,10 @@ struct CongratsPage: View {
                     Spacer()
                 }
             }
-            // MARK: - Lifecycle Handlers
+            // Lifecycle Handlers
             .onAppear {
-                audio.loadAudio(named: "story2")
-                chunks = loadJSON("story2_timing", as: [ChunkTimestamp].self) ?? []
+                audio.loadAudio(named: "story1")
+                chunks = loadJSON("story1_timing", as: [ChunkTimestamp].self) ?? []
                 
                 // Automatically start playing and tracking
                 audio.play()
@@ -165,7 +168,7 @@ struct CongratsPage: View {
             .onDisappear {
                 audio.stop()
             }
-            // MARK: - Time Tracking / Highlighting Logic
+            // Time tracking & highlighting logic
             .onChange(of: audio.currentTime) { newTime in
                 // Find the index of the chunk whose time range includes the current audio time
                 activeChunkIndex = chunks.firstIndex(where: { newTime >= $0.start && newTime < $0.end }) ?? activeChunkIndex
@@ -173,55 +176,58 @@ struct CongratsPage: View {
         }
     }
     
-    // MARK: - AttributedString Builder (Updated to use fullStory as base)
+    
+// ----------------------------
+
+    // AttributedString builder - compare base paragraph with JSON file to highlight text based on their timestamp.
     private func attributedParagraph() -> AttributedString {
         // 1. Initialize the AttributedString with the entire story text.
-        let paragraph = fullStory // Use the complete, hardcoded story string
+        let paragraph = fullStory
         var attr = AttributedString(paragraph)
         
-        // 2. Set up search index to handle repeated phrases correctly.
+        // 2. Starting index for tracking
         var currentSearchIndex = paragraph.startIndex
         
-        // 3. Define base attributes once
+        // Define styling attributes
         let normalFont = AttributeContainer.font(.custom("Tajawal-Bold", size: 32))
         let highlightedFont = AttributeContainer.font(.custom("Tajawal-Bold", size: 34))
         let highlightedBackground = AttributeContainer.backgroundColor(Color.yellow.opacity(0.8))
 
-        // Set the base font for the entire paragraph first
         attr.mergeAttributes(normalFont, mergePolicy: .keepNew)
         attr.foregroundColor = .black
         
         for (i, chunk) in chunks.enumerated() {
-            // Clean the chunk text for a reliable match (remove leading/trailing spaces)
+            // 3- Clean the text chunk for better comparison.
             let segmentToFind = chunk.text.trimmingCharacters(in: .whitespacesAndNewlines)
             
-            // Find the range of the current chunk's text in the full story string
+            // 4- Search for the text chunk inside the full story.
             if let textRange = paragraph.range(of: segmentToFind, range: currentSearchIndex..<paragraph.endIndex) {
                 
                 let attributedRange = Range(textRange, in: attr)!
-                
-                // Apply a consistent space *after* the segment (except for the last one)
-                // This is complex with AttributedString. We'll stick to styling the segment itself.
-                
+                                
                 if i == activeChunkIndex {
-                    // Apply highlight style
+                    // 5- Once we find the chunk highlight it.
                     attr[attributedRange].mergeAttributes(highlightedFont, mergePolicy: .keepNew)
                     attr[attributedRange].mergeAttributes(highlightedBackground, mergePolicy: .keepNew)
                 } else {
-                    // Remove highlight (must do this explicitly, as the base styles are already set)
+                    // 6- Cleaning
+                    // Remove highlight
                     attr[attributedRange].backgroundColor = .clear
-                    // Restore normal font size for non-active chunks (if the base set it to 34)
+                    // Restore normal font size for non-active chunks
                     attr[attributedRange].mergeAttributes(normalFont, mergePolicy: .keepNew)
                 }
                 
-                // Move the search cursor past the found segment to ensure the next search starts after it
+                // Increase the index.
                 currentSearchIndex = textRange.upperBound
             }
         }
         return attr
     }
 
-    // MARK: - JSON Loader Helper
+    
+// ----------------------------
+
+    // JSON loader to convert from and to JSON.
     private func loadJSON<T: Decodable>(_ name: String, as type: T.Type) -> T? {
         guard let url = Bundle.main.url(forResource: name, withExtension: "json"),
               let data = try? Data(contentsOf: url) else {

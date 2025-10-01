@@ -1,13 +1,5 @@
-//
-//  ContentView.swift
-//  HomePage
-//
-//  Created by Dana on 06/04/1447 AH.
-//
 
 import SwiftUI
-
-
 
 struct HomePage: View {
     @State private var name: String = ""
@@ -17,8 +9,7 @@ struct HomePage: View {
         NavigationStack{
             ZStack {
                 // Background color
-                let myColor = #colorLiteral(red: 0.7633937001, green: 0.9465207458, blue: 0.9436731935, alpha: 1)
-                Color(myColor)
+                Color.backgroundcolor
                     .ignoresSafeArea()
                 
                 VStack(alignment: .center, spacing: 20) {
@@ -49,8 +40,7 @@ struct HomePage: View {
                     
                     
                     // Start button
-                    
-                    NavigationLink(destination: CongratsPage()){
+                    NavigationLink(destination: SelectStory(name: name)){
                         Text("ابدأ")
                             .font(.custom("Tajawal-Bold", size: 30))
                             .fontWeight(.bold)

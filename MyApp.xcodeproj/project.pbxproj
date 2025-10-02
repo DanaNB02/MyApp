@@ -15,16 +15,30 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				story3_timing.json,
+				story4_timing.json,
 			);
 			target = 372E45FB2E8A806F00347A61 /* MyApp */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		3788C5F32E8E7575005FBF5A /* Exceptions for "MyApp" folder in "Compile Sources" phase from "MyApp" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 372E45F82E8A806F00347A61 /* Sources */;
+			membershipExceptions = (
+				story3_timing.json,
+				story4_timing.json,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		372E45FE2E8A806F00347A61 /* MyApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				372E461A2E8A813400347A61 /* Exceptions for "MyApp" folder in "MyApp" target */,
+				3788C5F32E8E7575005FBF5A /* Exceptions for "MyApp" folder in "Compile Sources" phase from "MyApp" target */,
 			);
 			path = MyApp;
 			sourceTree = "<group>";

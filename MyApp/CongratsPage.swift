@@ -113,12 +113,6 @@ struct CongratsPage: View {
                             .background(Color.blue)
                             .foregroundColor(.white)
                             .cornerRadius(12)
-                            
-                            // Show current time - TODO: DELETE
-                                                        Text(String(format: "%.2f ث", audio.currentTime))
-                                                            .monospaced()
-                                                            .font(.title3)
-                                                            .foregroundColor(.gray)
                                                     }
                                                     
                                                     // Call attributedParagraph to display highlited text.

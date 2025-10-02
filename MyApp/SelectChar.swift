@@ -9,13 +9,36 @@
 
 import SwiftUI
 
-struct selectchar: View {
+struct SelectChar: View {
     @Environment(\.dismiss) var dismiss
+    var name: String // Passed from SelectStory
+    var storyID: Int // Passed from SelectStory
+
+    // Function to implement the audio selection logic
+    func getAudioFileName(for characterName: String) -> String {
+        let voicePrefix: String
+        
+        // 1. Determine the voice based on the Arabic character name
+        switch characterName {
+        case "ايلسا", "بلوسم": // Girl Voice
+            voicePrefix = "girl"
+        case "سبايدر مان", "هولك": // Boy Voice
+            voicePrefix = "boy"
+        default:
+            // This case should ideally not be hit
+            voicePrefix = "default"
+        }
+        
+        // 2. Combine the voice prefix and the story ID
+        // Final file name format: "girl_story1", "boy_story3", etc.
+        return "\(voicePrefix)_story\(storyID)"
+    }
     
     var body: some View {
-        ZStack  {
+        ZStack {
             let bcolor = Color.backgroundcolor
             Color(bcolor).ignoresSafeArea()
+            
             VStack(spacing: 30) {
                 // العنوان الرئيسي
                 Text("اختر شخصيتك المفضلة!")
@@ -23,41 +46,77 @@ struct selectchar: View {
                     .bold()
                     .padding(.top, 80)
                     .foregroundColor(Color.textcolor)
-                    .multilineTextAlignment(.trailing) // النص يبدأ من اليمين
-                    .shadow(color: .black.opacity(0.2), radius: 10, x: -4, y: 10) // ظل النص
+                    .multilineTextAlignment(.trailing)
+                    .shadow(color: .black.opacity(0.2), radius: 10, x: -4, y: 10)
                 
-                // الكروت
-                CharacterCard(
-                    imageName: "elsa",
-                    name: "ايلسا",
-                    description: "عبّري عن مشاعرك بصوت جميل مثل الثلج المتلألئ",
+                // الكروت - Wrapped in NavigationLink and data logic applied
+                
+                // Elsa Card (ID: ايلسا -> girl)
+                NavigationLink(destination: StoryView(
+                    storyID: self.storyID,
+                    characterImage: "elsa",
                     backgroundColor: Color.elsacolor,
-                    textColor: .white
-                )
+                    audioFileName: getAudioFileName(for: "ايلسا") // Calls the audio logic
+                )) {
+                    CharacterCard(
+                        imageName: "elsa",
+                        name: "ايلسا",
+                        description: "عبّري عن مشاعرك بصوت جميل مثل الثلج المتلألئ",
+                        backgroundColor: Color.elsacolor,
+                        textColor: .white
+                    )
+                }
+                .buttonStyle(.plain) // Keeps the custom card look
                 
-                CharacterCard(
-                    imageName: "spiderman",
-                    name: "سبايدر مان",
-                    description: "استخدم قوتك بالكلام كما أستخدم قوتي للخير",
+                // Spiderman Card (ID: سبايدر مان -> boy)
+                NavigationLink(destination: StoryView(
+                    storyID: self.storyID,
+                    characterImage: "spiderman",
                     backgroundColor: Color.spidermancolor,
-                    textColor: .red
-                )
+                    audioFileName: getAudioFileName(for: "سبايدر مان") // Calls the audio logic
+                )) {
+                    CharacterCard(
+                        imageName: "spiderman",
+                        name: "سبايدر مان",
+                        description: "استخدم قوتك بالكلام كما أستخدم قوتي للخير",
+                        backgroundColor: Color.spidermancolor,
+                        textColor: .red
+                    )
+                }
+                .buttonStyle(.plain)
                 
-                CharacterCard(
-                    imageName: "blossom",
-                    name: "بلوسم",
-                    description: "لتتحدث بشجاعة وابتسامة جميلة",
-                    backgroundColor: Color.blosoomcolor,
-                    textColor: .orange
-                )
+                // Blossom Card (ID: بلوسم -> girl)
+                NavigationLink(destination: StoryView(
+                    storyID: self.storyID,
+                    characterImage: "blossom",
+                    backgroundColor: Color.blosoomcolor,                    audioFileName: getAudioFileName(for: "بلوسم") // Calls the audio logic
+                )) {
+                    CharacterCard(
+                        imageName: "blossom",
+                        name: "بلوسم",
+                        description: "لتتحدث بشجاعة وابتسامة جميلة",
+                        backgroundColor: Color.blosoomcolor,
+                        textColor: .orange
+                    )
+                }
+                .buttonStyle(.plain)
                 
-                CharacterCard(
-                    imageName: "hulk",
-                    name: "هولك",
-                    description: "تكلم بثقة وأظهر قوتك الإيجابية",
+                // Hulk Card (ID: هولك -> boy)
+                NavigationLink(destination: StoryView(
+                    storyID: self.storyID,
+                    characterImage: "hulk",
                     backgroundColor: Color.hulkcolor,
-                    textColor: .green
-                )
+                    audioFileName: getAudioFileName(for: "هولك") // Calls the audio logic
+                )) {
+                    CharacterCard(
+                        imageName: "hulk",
+                        name: "هولك",
+                        description: "تكلم بثقة وأظهر قوتك الإيجابية",
+                        backgroundColor: Color.hulkcolor,
+                        textColor: .green
+                    )
+                }
+                .buttonStyle(.plain)
                 
                 Spacer()
             }
@@ -66,6 +125,7 @@ struct selectchar: View {
     }
 }
 
+// CharacterCard struct remains exactly as you provided
 struct CharacterCard: View {
     let imageName: String
     let name: String
@@ -89,13 +149,11 @@ struct CharacterCard: View {
                     .bold()
                     .foregroundColor(textColor)
                     .multilineTextAlignment(.trailing)
-                   // .shadow(color: .black.opacity(0.3), radius: 4, x: 2, y: 2)
                 
                 Text(description)
                     .font(.custom("Tajawal-Extrabold", size: 21))
                     .foregroundColor(textColor)
                     .multilineTextAlignment(.trailing)
-                    //.shadow(color: .black.opacity(0.3), radius: 3, x: 2, y: 2)
                     .padding(.top, 10)
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
@@ -104,28 +162,15 @@ struct CharacterCard: View {
         .padding()
         .background(backgroundColor)
         .cornerRadius(25)
-     .shadow(color: .gray.opacity(0.2), radius: 10, x: -4, y: 10)
+        .shadow(color: .gray.opacity(0.2), radius: 10, x: -4, y: 10)
     }
 }
 
-// مساعد لتحويل Hex إلى Color
-//extension Color {
-//    init(hex: String) {
-//        let scanner = Scanner(string: hex)
-//        _ = scanner.scanString("#")
-//
-//        var rgb: UInt64 = 0
-//        scanner.scanHexInt64(&rgb)
-//
-//        let r = Double((rgb >> 16) & 0xFF) / 255
-//        let g = Double((rgb >> 8) & 0xFF) / 255
-//        let b = Double(rgb & 0xFF) / 255
-//
-//        self.init(red: r, green: g, blue: b)
-//    }
-//}
 
 #Preview {
-    selectchar()
+    // Wrap in NavigationStack for the preview to work correctly
+    NavigationStack {
+        SelectChar(name: "سالم", storyID: 3)
+    }
+    
 }
-

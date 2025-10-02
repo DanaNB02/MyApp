@@ -28,8 +28,8 @@ final class StoryViewModel2: ObservableObject {
     }
 
     func prepareAudio() {
-        guard let url = Bundle.main.url(forResource: "story1", withExtension: "m4a") else {
-            print("story1.m4a not found.")
+        guard let url = Bundle.main.url(forResource: "story1", withExtension: "mp3") else {
+            print("story1.mp3 not found.")
             return
         }
         do {

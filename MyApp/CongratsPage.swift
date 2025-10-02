@@ -1,5 +1,3 @@
-
-
 import SwiftUI
 import AVFoundation
 import Combine
@@ -115,71 +113,71 @@ struct CongratsPage: View {
                             .background(Color.blue)
                             .foregroundColor(.white)
                             .cornerRadius(12)
-
+                            
                             // Show current time - TODO: DELETE
-                            Text(String(format: "%.2f ث", audio.currentTime))
-                                .monospaced()
-                                .font(.title3)
-                                .foregroundColor(.gray)
-                        }
-                        
-                        // Call attributedParagraph to display highlited text.
-                        ScrollView {
-                            Text(attributedParagraph())
-                                .font(.custom("Tajawal-Bold", size: 32))
-                                .foregroundColor(Color.black)
-                                .environment(\.layoutDirection, .rightToLeft)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                                .padding(.horizontal)
-                        }
-                        .frame(height: 300)
-                    }
-                    
-                    // Logo and Congrats Text
-                    Image("congratsImage")
-                        .resizable().scaledToFit().frame(maxWidth: 500)
-                    
-                    let str = "أنت رائع\nالعالم ينتظر صوتك!"
-                    Text(str)
-                        .font(.custom("Tajawal-Bold", size: 40))
-                        .foregroundColor(Color.textcolor)
-                        .multilineTextAlignment(.center)
-                        .padding(.bottom, 20)
-                    
-                    // End Button
-                    NavigationLink(destination: Text("Home Page Placeholder")) {
-                        Text("إنهاء")
-                            .font(.custom("Tajawal-Bold", size: 32)).fontWeight(.bold)
-                            .frame(maxWidth: 270).padding()
-                            .background(Color.orange).cornerRadius(12).foregroundColor(.white)
-                    }
-                    
-                    Spacer()
-                }
-            }
-            // Lifecycle Handlers
-            .onAppear {
-                audio.loadAudio(named: "story1")
-                chunks = loadJSON("story1_timing", as: [ChunkTimestamp].self) ?? []
-                
-                // Automatically start playing and tracking
-                audio.play()
-            }
-            .onDisappear {
-                audio.stop()
-            }
-            // Time tracking & highlighting logic
-            .onChange(of: audio.currentTime) { newTime in
-                // Find the index of the chunk whose time range includes the current audio time
-                activeChunkIndex = chunks.firstIndex(where: { newTime >= $0.start && newTime < $0.end }) ?? activeChunkIndex
-            }
-        }
-    }
-    
-    
-// ----------------------------
+                                                        Text(String(format: "%.2f ث", audio.currentTime))
+                                                            .monospaced()
+                                                            .font(.title3)
+                                                            .foregroundColor(.gray)
+                                                    }
+                                                    
+                                                    // Call attributedParagraph to display highlited text.
+                                                    ScrollView {
+                                                        Text(attributedParagraph())
+                                                            .font(.custom("Tajawal-Bold", size: 32))
+                                                            .foregroundColor(Color.black)
+                                                            .environment(\.layoutDirection, .rightToLeft)
+                                                            .frame(maxWidth: .infinity, alignment: .trailing)
+                                                            .padding(.horizontal)
+                                                    }
+                                                    .frame(height: 300)
+                                                }
+                                                
+                                                // Logo and Congrats Text
+                                                Image("congratsImage")
+                                                    .resizable().scaledToFit().frame(maxWidth: 500)
+                                                
+                                                let str = "أنت رائع\nالعالم ينتظر صوتك!"
+                                                Text(str)
+                                                    .font(.custom("Tajawal-Bold", size: 40))
+                                                    .foregroundColor(Color.textcolor)
+                                                    .multilineTextAlignment(.center)
+                                                    .padding(.bottom, 20)
+                                                
+                                                // End Button
+                                                NavigationLink(destination: Text("Home Page Placeholder")) {
+                                                    Text("إنهاء")
+                                                        .font(.custom("Tajawal-Bold", size: 32)).fontWeight(.bold)
+                                                        .frame(maxWidth: 270).padding()
+                                                        .background(Color.orange).cornerRadius(12).foregroundColor(.white)
+                                                }
+                                                
+                                                Spacer()
+                                            }
+                                        }
+                                        // Lifecycle Handlers
+                                        .onAppear {
+                                            audio.loadAudio(named: "story1")
+                                            chunks = loadJSON("story1_timing", as: [ChunkTimestamp].self) ?? []
+                                            
+                                            // Automatically start playing and tracking
+                                            audio.play()
+                                        }
+                                        .onDisappear {
+                                            audio.stop()
+                                        }
+                                        // Time tracking & highlighting logic
+                                        .onChange(of: audio.currentTime) { newTime in
+                                            // Find the index of the chunk whose time range includes the current audio time
+                                            activeChunkIndex = chunks.firstIndex(where: { newTime >= $0.start && newTime < $0.end }) ?? activeChunkIndex
+                                        }
+                                    }
+                                }
+                                
+                                
+                            // ----------------------------
 
-    // AttributedString builder - compare base paragraph with JSON file to highlight text based on their timestamp.
+                                // AttributedString builder - compare base paragraph with JSON file to highlight text based on their timestamp.
     private func attributedParagraph() -> AttributedString {
         // 1. Initialize the AttributedString with the entire story text.
         let paragraph = fullStory
@@ -192,48 +190,47 @@ struct CongratsPage: View {
         let normalFont = AttributeContainer.font(.custom("Tajawal-Bold", size: 32))
         let highlightedFont = AttributeContainer.font(.custom("Tajawal-Bold", size: 34))
         let highlightedBackground = AttributeContainer.backgroundColor(Color.yellow.opacity(0.8))
-
         attr.mergeAttributes(normalFont, mergePolicy: .keepNew)
-        attr.foregroundColor = .black
-        
-        for (i, chunk) in chunks.enumerated() {
-            // 3- Clean the text chunk for better comparison.
-            let segmentToFind = chunk.text.trimmingCharacters(in: .whitespacesAndNewlines)
-            
-            // 4- Search for the text chunk inside the full story.
-            if let textRange = paragraph.range(of: segmentToFind, range: currentSearchIndex..<paragraph.endIndex) {
+                attr.foregroundColor = .black
                 
-                let attributedRange = Range(textRange, in: attr)!
-                                
-                if i == activeChunkIndex {
-                    // 5- Once we find the chunk highlight it.
-                    attr[attributedRange].mergeAttributes(highlightedFont, mergePolicy: .keepNew)
-                    attr[attributedRange].mergeAttributes(highlightedBackground, mergePolicy: .keepNew)
-                } else {
-                    // 6- Cleaning
-                    // Remove highlight
-                    attr[attributedRange].backgroundColor = .clear
-                    // Restore normal font size for non-active chunks
-                    attr[attributedRange].mergeAttributes(normalFont, mergePolicy: .keepNew)
+                for (i, chunk) in chunks.enumerated() {
+                    // 3- Clean the text chunk for better comparison.
+                    let segmentToFind = chunk.text.trimmingCharacters(in: .whitespacesAndNewlines)
+                    
+                    // 4- Search for the text chunk inside the full story.
+                    if let textRange = paragraph.range(of: segmentToFind, range: currentSearchIndex..<paragraph.endIndex) {
+                        
+                        let attributedRange = Range(textRange, in: attr)!
+                                        
+                        if i == activeChunkIndex {
+                            // 5- Once we find the chunk highlight it.
+                            attr[attributedRange].mergeAttributes(highlightedFont, mergePolicy: .keepNew)
+                            attr[attributedRange].mergeAttributes(highlightedBackground, mergePolicy: .keepNew)
+                        } else {
+                            // 6- Cleaning
+                            // Remove highlight
+                            attr[attributedRange].backgroundColor = .clear
+                            // Restore normal font size for non-active chunks
+                            attr[attributedRange].mergeAttributes(normalFont, mergePolicy: .keepNew)
+                        }
+                        
+                        // Increase the index.
+                        currentSearchIndex = textRange.upperBound
+                    }
                 }
-                
-                // Increase the index.
-                currentSearchIndex = textRange.upperBound
+                return attr
+            }
+
+            
+        // ----------------------------
+
+            // JSON loader to convert from and to JSON.
+            private func loadJSON<T: Decodable>(_ name: String, as type: T.Type) -> T? {
+                guard let url = Bundle.main.url(forResource: name, withExtension: "json"),
+                      let data = try? Data(contentsOf: url) else {
+                    print("Error: Could not find or load \(name).json")
+                    return nil
+                }
+                return try? JSONDecoder().decode(T.self, from: data)
             }
         }
-        return attr
-    }
-
-    
-// ----------------------------
-
-    // JSON loader to convert from and to JSON.
-    private func loadJSON<T: Decodable>(_ name: String, as type: T.Type) -> T? {
-        guard let url = Bundle.main.url(forResource: name, withExtension: "json"),
-              let data = try? Data(contentsOf: url) else {
-            print("Error: Could not find or load \(name).json")
-            return nil
-        }
-        return try? JSONDecoder().decode(T.self, from: data)
-    }
-}

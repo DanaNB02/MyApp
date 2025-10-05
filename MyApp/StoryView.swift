@@ -82,8 +82,7 @@ private func loadJSON<T: Decodable>(_ name: String, as type: T.Type) -> T? {
     return try? JSONDecoder().decode(T.self, from: data)
 }
 
-// Updated helper to load the full story text from your "stories.json" file.
-// This now handles the [String: String] dictionary format.
+// load the full story text from your "fullStories.json" file.
 func loadFullStoryText(for storyKey: String) -> String {
     guard let allStories = loadJSON("fullStories", as: [String: String].self),
           let storyText = allStories[storyKey] else {

@@ -14,29 +14,17 @@
 		372E461A2E8A813400347A61 /* Exceptions for "MyApp" folder in "MyApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				fullStories.json,
 				Info.plist,
 			);
 			target = 372E45FB2E8A806F00347A61 /* MyApp */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		3788D0422E924BC000ABE2F2 /* Exceptions for "MyApp" folder in "Compile Sources" phase from "MyApp" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = 372E45F82E8A806F00347A61 /* Sources */;
-			membershipExceptions = (
-				fullStories.json,
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		372E45FE2E8A806F00347A61 /* MyApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				372E461A2E8A813400347A61 /* Exceptions for "MyApp" folder in "MyApp" target */,
-				3788D0422E924BC000ABE2F2 /* Exceptions for "MyApp" folder in "Compile Sources" phase from "MyApp" target */,
 			);
 			path = MyApp;
 			sourceTree = "<group>";

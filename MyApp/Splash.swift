@@ -3,6 +3,7 @@ import SwiftUI
 
 struct Splash: View {
     var body: some View {
+      
         ZStack{
             Color(red:195/255 , green:235/255 , blue: 241/255)
                 .ignoresSafeArea(edges: .all)
@@ -24,7 +25,6 @@ struct Splash: View {
         
         
      
-       // .padding()
     }
 }
   

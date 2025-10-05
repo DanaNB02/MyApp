@@ -111,18 +111,34 @@ struct StoryView: View {
     // Your original state property
     @State private var showEmojis = false
 
+    // Current emoji for the active chunk (trimmed), empty if none
+    private var currentEmoji: String {
+        guard activeChunkIndex >= 0 && activeChunkIndex < chunks.count else { return "" }
+        return chunks[activeChunkIndex].emoji.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
+    // Should the emitter be on right now?
+    private var isEmitting: Bool {
+        audioCoordinator.isPlaying && !currentEmoji.isEmpty && activeChunkIndex != -1
+    }
+
     // --- View Body ---
     var body: some View {
         ZStack {
             backgroundColor.ignoresSafeArea()
 
+            // Place the emitter BEHIND everything so it never shows inside the white board,
+            // and appears visually behind the character image.
+            EmojiEmitter(
+                emoji: currentEmoji,
+                isEmitting: isEmitting,
+                birthRate: 5.0 // tweak as you like
+            )
+            .ignoresSafeArea()
+            .allowsHitTesting(false)
+
             VStack(spacing: 30) {
                 ZStack {
-                    // Your Emoji Emitter goes here if needed
-                    if showEmojis {
-                        // EmojiEmitter()
-                    }
-                    
                     // Image (Dynamic)
                     Image(characterImage)
                         .resizable()
@@ -133,7 +149,7 @@ struct StoryView: View {
                         .offset(x: 0, y: -100)
                     
                     // --- CHANGED: This now displays the Attributed String ---
-                    ScrollView {
+                   
                          Text(attributedParagraph()) // Display the styled, highlighted text
                             .font(.custom("Tajawal-bold", size: 27))
                             .multilineTextAlignment(.center)
@@ -141,8 +157,8 @@ struct StoryView: View {
                             .padding(.horizontal, 15)
                             .lineSpacing(15)
                             .frame(maxWidth: .infinity, alignment: .center)
-                    }
-                    .frame(height: 150) // Give the scroll view a reasonable height
+                    
+                            .frame(width: 830, height: 600)// Give the scroll view a reasonable height
                     .offset(x: 0, y: 220)
                    
                     // Background Card (Your original design)
@@ -189,25 +205,33 @@ struct StoryView: View {
             }
         }
         .onAppear {
-            print("--- Loading Story ---")
-            print("Attempting to load audio/JSON file: \(audioFileName)") // ✅ Add this
-
+            // Load all necessary data when the view appears
             let storyKey = "story\(storyID)"
             fullStoryText = loadFullStoryText(for: storyKey)
             
+            // The audio file name is the same as the timing JSON file name
             chunks = loadJSON(audioFileName, as: [ChunkTimestamp].self) ?? []
-            print("Loaded \(chunks.count) text chunks.") // ✅ Add this
-            
             audioCoordinator.loadAudio(named: audioFileName)
+            activeChunkIndex = -1
         }
         .onDisappear {
             // Stop audio and clean up when the view disappears
             audioCoordinator.stop()
         }
-        // --- ADDED: This modifier links audio time to the highlighting logic ---
+        // --- UPDATED: Link audio time to highlighting and reset index during gaps ---
         .onChange(of: audioCoordinator.currentTime) { newTime in
-            // Find the index of the chunk whose time range includes the current audio time
-            activeChunkIndex = chunks.firstIndex(where: { newTime >= $0.start && newTime < $0.end }) ?? activeChunkIndex
+            if let idx = chunks.firstIndex(where: { newTime >= $0.start && newTime < $0.end }) {
+                if idx != activeChunkIndex {
+                    // Debug: print when chunk changes
+                    print("Active chunk -> \(idx), emoji: \(chunks[idx].emoji)")
+                }
+                activeChunkIndex = idx
+            } else {
+                if activeChunkIndex != -1 {
+                    print("No active chunk (gap)")
+                }
+                activeChunkIndex = -1
+            }
         }
     }
 

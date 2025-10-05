@@ -189,12 +189,15 @@ struct StoryView: View {
             }
         }
         .onAppear {
-            // Load all necessary data when the view appears
+            print("--- Loading Story ---")
+            print("Attempting to load audio/JSON file: \(audioFileName)") // ✅ Add this
+
             let storyKey = "story\(storyID)"
             fullStoryText = loadFullStoryText(for: storyKey)
             
-            // The audio file name is the same as the timing JSON file name
             chunks = loadJSON(audioFileName, as: [ChunkTimestamp].self) ?? []
+            print("Loaded \(chunks.count) text chunks.") // ✅ Add this
+            
             audioCoordinator.loadAudio(named: audioFileName)
         }
         .onDisappear {

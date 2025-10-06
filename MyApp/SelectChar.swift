@@ -40,6 +40,7 @@ struct SelectChar: View {
             Color(bcolor).ignoresSafeArea()
             
             VStack(spacing: 30) {
+                
                 // العنوان الرئيسي
                 Text("اختر شخصيتك المفضلة!")
                     .font(.custom("Tajawal-Regular", size: 50))

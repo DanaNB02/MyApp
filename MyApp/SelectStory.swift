@@ -37,7 +37,7 @@ struct SelectStory: View {
                 // Story 1: ID 1
                 VStack {
                     Spacer()
-                    NavigationLink(destination: SelectChar(name: self.name, storyID: 1)) {
+                    NavigationLink(destination: SelectChar(name: self.name, storyID: 4)) {
                         Image("story1")
                             .resizable()
                             .scaledToFit()
@@ -52,7 +52,7 @@ struct SelectStory: View {
                 // Story 2: ID 2
                 VStack {
                     Spacer()
-                    NavigationLink(destination: SelectChar(name: self.name, storyID: 2)) {
+                    NavigationLink(destination: SelectChar(name: self.name, storyID: 4)) {
                         Image("story2")
                             .resizable()
                             .scaledToFit()
@@ -67,7 +67,7 @@ struct SelectStory: View {
                 // Story 3: ID 3
                 VStack {
                     Spacer()
-                    NavigationLink(destination: SelectChar(name: self.name, storyID: 3)) {
+                    NavigationLink(destination: SelectChar(name: self.name, storyID: 4)) {
                         Image("story3")
                             .resizable()
                             .scaledToFit()

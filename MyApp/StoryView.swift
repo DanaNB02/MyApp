@@ -97,6 +97,7 @@ func loadFullStoryText(for storyKey: String) -> String {
 
 struct StoryView: View {
     // --- Inputs passed from SelectChar ---
+    let name: String
     let storyID: Int
     let characterImage: String
     let backgroundColor: Color
@@ -124,84 +125,90 @@ struct StoryView: View {
 
     // --- View Body ---
     var body: some View {
-        ZStack {
-            backgroundColor.ignoresSafeArea()
-
-            // Place the emitter BEHIND everything so it never shows inside the white board,
-            // and appears visually behind the character image.
-            EmojiEmitter(
-                emoji: currentEmoji,
-                isEmitting: isEmitting,
-                birthRate: 5.0 // tweak as you like
-            )
-            .ignoresSafeArea()
-            .allowsHitTesting(false)
-
-            VStack(spacing: 30) {
-                ZStack {
-                    // Image (Dynamic)
-                    Image(characterImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 800)
-                        .shadow(radius: 8)
-                        .cornerRadius(16)
-                        .offset(x: 0, y: -100)
-                    
-                    // --- CHANGED: This now displays the Attributed String ---
-                   
-                         Text(attributedParagraph()) // Display the styled, highlighted text
+        NavigationStack {
+            
+            ZStack {
+                backgroundColor.ignoresSafeArea()
+                
+                // Place the emitter BEHIND everything so it never shows inside the white board,
+                // and appears visually behind the character image.
+                EmojiEmitter(
+                    emoji: currentEmoji,
+                    isEmitting: isEmitting,
+                    birthRate: 5.0 // tweak as you like
+                )
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
+                
+                VStack(spacing: 30) {
+                    ZStack {
+                        // Image (Dynamic)
+                        Image(characterImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 800)
+                            .shadow(radius: 8)
+                            .cornerRadius(16)
+                            .offset(x: 0, y: -100)
+                        
+                        // --- CHANGED: This now displays the Attributed String ---
+                        
+                        Text(attributedParagraph()) // Display the styled, highlighted text
                             .font(.custom("Tajawal-bold", size: 27))
                             .multilineTextAlignment(.center)
                             .foregroundColor(Color.nextprevcolor)
                             .padding(.horizontal, 15)
                             .lineSpacing(15)
                             .frame(maxWidth: .infinity, alignment: .center)
-                    
+                        
                             .frame(width: 830, height: 600)// Give the scroll view a reasonable height
-                    .offset(x: 0, y: 220)
-                   
-                    // Background Card (Your original design)
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 60)
-                            .fill(Color.white)
-                            .frame(width: 830, height: 600)
-                            .offset(x: 0, y: 320)
-                            .shadow(color: .gray.opacity(0.3), radius: 6, x: 0, y: 4)
-                    )
-                    
-                    // --- CHANGED: Audio Controls now use AudioCoordinator ---
-                    HStack(spacing: 50) {
-                        Button(action: { print("Previous tapped") }) {
-                             Circle().fill(Color.nextprevcolor).frame(width: 64, height: 64).shadow(radius: 4).overlay(Image(systemName: "chevron.left").font(.system(size: 20, weight: .bold)).foregroundColor(.white))
-                        }
+                            .offset(x: 0, y: 220)
                         
-                        Button(action: {
-                            // Use the coordinator to play or pause
-                            audioCoordinator.isPlaying ? audioCoordinator.pause() : audioCoordinator.play()
-                        }) {
-                            Circle()
-                                .fill(Color.startcolor)
-                                .frame(width: 112, height: 112)
-                                .shadow(radius: 6)
-                                .overlay(
-                                    Image(systemName: audioCoordinator.isPlaying ? "pause.fill" : "play.fill")
-                                        .font(.system(size: 36, weight: .bold))
-                                        .foregroundColor(.white)
-                                )
-                                .scaleEffect(audioCoordinator.isPlaying ? 1.05 : 1.0)
-                                .animation(.spring(response: 0.4, dampingFraction: 0.6), value: audioCoordinator.isPlaying)
-                        }
+                        // Background Card (Your original design)
+                            .padding()
+                            .background(
+                                RoundedRectangle(cornerRadius: 60)
+                                    .fill(Color.white)
+                                    .frame(width: 830, height: 600)
+                                    .offset(x: 0, y: 320)
+                                    .shadow(color: .gray.opacity(0.3), radius: 6, x: 0, y: 4)
+                            )
                         
-                        Button(action: { print("Next tapped") }) {
-                            Circle().fill(Color.nextprevcolor).frame(width: 64, height: 64).shadow(radius: 4).overlay(Image(systemName: "chevron.right").font(.system(size: 20, weight: .bold)).foregroundColor(.white))
+                        // --- CHANGED: Audio Controls now use AudioCoordinator ---
+                        HStack(spacing: 50) {
+                           
+                            
+                            NavigationLink(destination: SelectChar(name: self.name, storyID: storyID)){
+                                Circle().fill(Color.nextprevcolor).frame(width: 64, height: 64).shadow(radius: 4).overlay(Image(systemName: "chevron.left").font(.system(size: 20, weight: .bold)).foregroundColor(.white))
+                            }
+                            
+                            Button(action: {
+                                // Use the coordinator to play or pause
+                                audioCoordinator.isPlaying ? audioCoordinator.pause() : audioCoordinator.play()
+                            }) {
+                                Circle()
+                                    .fill(Color.startcolor)
+                                    .frame(width: 112, height: 112)
+                                    .shadow(radius: 6)
+                                    .overlay(
+                                        Image(systemName: audioCoordinator.isPlaying ? "pause.fill" : "play.fill")
+                                            .font(.system(size: 36, weight: .bold))
+                                            .foregroundColor(.white)
+                                    )
+                                    .scaleEffect(audioCoordinator.isPlaying ? 1.05 : 1.0)
+                                    .animation(.spring(response: 0.4, dampingFraction: 0.6), value: audioCoordinator.isPlaying)
+                            }
+                            
+                            
+                            NavigationLink(destination: CongratsPage(name: self.name)){
+                                Circle().fill(Color.nextprevcolor).frame(width: 64, height: 64).shadow(radius: 4).overlay(Image(systemName: "chevron.right").font(.system(size: 20, weight: .bold)).foregroundColor(.white))
+                            }
                         }
+                        .offset(x: 0, y: 460)
+                        .padding(.top, 30)
                     }
-                    .offset(x: 0, y: 460)
-                    .padding(.top, 30)
+                    .padding()
                 }
-                .padding()
             }
         }
         .onAppear {

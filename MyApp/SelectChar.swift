@@ -53,6 +53,7 @@ struct SelectChar: View {
                 
                 // Elsa Card (ID: ايلسا -> girl)
                 NavigationLink(destination: StoryView(
+                    name: self.name,
                     storyID: self.storyID,
                     characterImage: "elsa",
                     backgroundColor: Color.elsacolor,
@@ -70,6 +71,8 @@ struct SelectChar: View {
                 
                 // Spiderman Card (ID: سبايدر مان -> boy)
                 NavigationLink(destination: StoryView(
+                    name: self.name,
+
                     storyID: self.storyID,
                     characterImage: "spiderman",
                     backgroundColor: Color.spidermancolor,
@@ -87,6 +90,8 @@ struct SelectChar: View {
                 
                 // Blossom Card (ID: بلوسم -> girl)
                 NavigationLink(destination: StoryView(
+                    name: self.name,
+
                     storyID: self.storyID,
                     characterImage: "blossom",
                     backgroundColor: Color.blosoomcolor,                    audioFileName: getAudioFileName(for: "بلوسم") // Calls the audio logic
@@ -103,6 +108,8 @@ struct SelectChar: View {
                 
                 // Hulk Card (ID: هولك -> boy)
                 NavigationLink(destination: StoryView(
+                    name: self.name,
+
                     storyID: self.storyID,
                     characterImage: "hulk",
                     backgroundColor: Color.hulkcolor,
@@ -170,7 +177,7 @@ struct CharacterCard: View {
 #Preview {
     // Wrap in NavigationStack for the preview to work correctly
     NavigationStack {
-        SelectChar(name: "سالم", storyID: 3)
+        SelectChar(name: "", storyID: 3)
     }
     
 }

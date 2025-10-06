@@ -8,6 +8,7 @@ import Combine
 class AudioCoordinator: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published var isPlaying: Bool = false
     @Published var currentTime: Double = 0.0
+    
 
     private var player: AVAudioPlayer?
     private var timer: AnyCancellable?
@@ -54,9 +55,10 @@ class AudioCoordinator: NSObject, ObservableObject, AVAudioPlayerDelegate {
         self.currentTime = 0.0
         timer?.cancel()
     }
-
+    var onAudioFinished: (() -> Void)?
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         stop()
+        onAudioFinished?()
     }
 }
 
@@ -108,6 +110,8 @@ struct StoryView: View {
     @State private var fullStoryText: String = ""
     @State private var chunks: [ChunkTimestamp] = []
     @State private var activeChunkIndex: Int = -1
+    @State private var showPopup = false
+
 
     // Your original state property
     @State private var showEmojis = false
@@ -141,6 +145,7 @@ struct StoryView: View {
                 .allowsHitTesting(false)
                 
                 VStack(spacing: 30) {
+                 
                     ZStack {
                         // Image (Dynamic)
                         Image(characterImage)
@@ -173,7 +178,32 @@ struct StoryView: View {
                                     .offset(x: 0, y: 320)
                                     .shadow(color: .gray.opacity(0.3), radius: 6, x: 0, y: 4)
                             )
-                        
+                        if showPopup {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(Color.white)
+                                    .shadow(radius: 10)
+                                
+                                VStack(spacing: 12) {
+                                    Text("حان دورك الآن")
+                                        .font(.custom("Tajawal-Bold", size: 22))
+                                        .foregroundColor(.black)
+                                }
+                            }
+                            .frame(width: 300, height: 150)
+                            .overlay(
+                                Button(action: {
+                                    showPopup = false
+                                }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.system(size: 24))
+                                        .foregroundColor(.gray)
+                                }
+                                .padding(8),
+                                alignment: .topTrailing
+                            )
+                            .animation(.spring(), value: showPopup)
+                        }
                         // --- CHANGED: Audio Controls now use AudioCoordinator ---
                         HStack(spacing: 50) {
                            
@@ -203,7 +233,9 @@ struct StoryView: View {
                             NavigationLink(destination: CongratsPage(name: self.name)){
                                 Circle().fill(Color.nextprevcolor).frame(width: 64, height: 64).shadow(radius: 4).overlay(Image(systemName: "chevron.right").font(.system(size: 20, weight: .bold)).foregroundColor(.white))
                             }
+                    
                         }
+                        
                         .offset(x: 0, y: 460)
                         .padding(.top, 30)
                     }
@@ -219,6 +251,13 @@ struct StoryView: View {
             // The audio file name is the same as the timing JSON file name
             chunks = loadJSON(audioFileName, as: [ChunkTimestamp].self) ?? []
             audioCoordinator.loadAudio(named: audioFileName)
+            audioCoordinator.onAudioFinished = {
+                showPopup = true
+                // Hide popup automatically after 15 seconds
+                DispatchQueue.main.asyncAfter(deadline: .now() + 15) {
+                    showPopup = false
+                }
+            }
             activeChunkIndex = -1
         }
         .onDisappear {

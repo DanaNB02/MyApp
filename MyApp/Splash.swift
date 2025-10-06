@@ -13,13 +13,13 @@ struct Splash: View {
                 VStack(spacing:-200){
                     Image("bird")
                         .resizable()
-                        .frame(width: 800, height: 800)
+                        .frame(width: 650, height: 800)
                         .offset(x: 100, y: 0)
                         .padding()
                     
                     Text("صوتك يغير القصة")
-                        .font(.largeTitle)
-                    
+                        .font(.custom("Tajawal-Regular", size: 50))
+                        .foregroundColor(.textcolor)
                 }
                 
                 
